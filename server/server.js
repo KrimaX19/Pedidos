@@ -33,7 +33,7 @@ mongoose.connect('mongodb://localhost:27017/ordersdb', { useNewUrlParser: true, 
 app.use(bodyParser.json());
 
 // Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/orders-management/Pedidos/public', express.static(path.join(__dirname, '../public')));
 
 // Apply authentication middleware only to API routes
 app.use('/api/orders', authMiddleware, ordersRoute);
