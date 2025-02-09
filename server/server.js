@@ -31,10 +31,12 @@ const authMiddleware = (req, res, next) => {
 mongoose.connect('mongodb://localhost:27017/ordersdb', { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
-app.use('/api/orders', authMiddleware, ordersRoute);
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, '../public')));
+
+// Apply authentication middleware only to API routes
+app.use('/api/orders', authMiddleware, ordersRoute);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
