@@ -8,8 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Usuário e senha definidos
-const USERNAME = 'teste';
-const PASSWORD = 'teste';
+const USERNAME = '123';
+const PASSWORD = '123';
 
 // Middleware de autenticação
 const authMiddleware = (req, res, next) => {
