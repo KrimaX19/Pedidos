@@ -1,14 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const path = require('path');
 const ordersRoute = require('./routes/orders');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Usuário e senha definidos
-const USERNAME = 'seu_usuario';
-const PASSWORD = 'sua_senha';
+const USERNAME = 'teste';
+const PASSWORD = 'teste';
 
 // Middleware de autenticação
 const authMiddleware = (req, res, next) => {
@@ -32,7 +33,8 @@ mongoose.connect('mongodb://localhost:27017/ordersdb', { useNewUrlParser: true, 
 app.use(bodyParser.json());
 app.use('/api/orders', authMiddleware, ordersRoute);
 
-app.use(express.static('public'));
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
