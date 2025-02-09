@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Pedido - Gestão de Pedidos</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        .form-group button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Novo Pedido</h2>
+        <form id="orderForm">
+            <div class="form-group">
+                <label for="status">Estado:</label>
+                <select id="status" name="status">
+                    <option value="pendente">Pendente</option>
+                    <option value="aceite">Aceite</option>
+                    <option value="em_execucao">Em Execução</option>
+                    <option value="concluido">Concluído</option>
+                    <option value="nao_aprovado">Não Aprovado</option>
+                    <option value="aguarda_aprovacao">Aguarda Aprovação Cliente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="work">Trabalho:</label>
+                <input type="text" id="work" name="work" required>
+            </div>
+            <div class="form-group">
+                <label for="orderDate">Data do Pedido:</label>
+                <input type="date" id="orderDate" name="orderDate" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Descrição:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="dueDate">Data Pretendida:</label>
+                <input type="date" id="dueDate" name="dueDate" required>
+            </div>
+            <button type="button" onclick="registerOrder()">Registar Pedido</button>
+        </form>
+    </div>
+
+    <script>
+        async function registerOrder() {
+            const status = document.getElementById("status").value;
+            const work = document.getElementById("work").value;
+            const orderDate = document.getElementById("orderDate").value;
+            const description = document.getElementById("description").value;
+            const dueDate = document.getElementById("dueDate").value;
+
+            const order = {
+                status,
+                work,
+                orderDate,
+                description,
+                dueDate
+            };
+
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(order)
+            });
+
+            if (response.ok) {
+                window.location.href = "orders.html";
+            } else {
+                alert('Erro ao registrar pedido');
+            }
+        }
+    </script>
+</body>
+</html>

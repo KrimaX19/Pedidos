@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos - Gestão de Pedidos</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* (Seus estilos permanecem os mesmos) */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Lista de Pedidos</h2>
+        <div class="order-header">
+            <button class="new-order-btn" onclick="openModal()">Novo Pedido</button>
+        </div>
+        <table class="order-list">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Trabalho</th>
+                    <th onclick="sortTable(1)">Data do Pedido</th>
+                    <th onclick="sortTable(2)">Descrição</th>
+                    <th onclick="sortTable(3)">Data Conclusão Pretendida</th>
+                    <th onclick="sortTable(4)">Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="orderTableBody">
+                <!-- Linhas de pedidos irão aqui -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="newOrderModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>Novo Pedido</h3>
+            <form id="orderForm">
+                <!-- Formulário de novo pedido -->
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Funções de modal e registro de pedido permanecem as mesmas
+        function openModal() {
+            document.getElementById("newOrderModal").style.display = "flex";
+        }
+        function closeModal() {
+            document.getElementById("newOrderModal").style.display = "none";
+        }
+        async function registerOrder() {
+            const status = document.getElementById("status").value;
+            const work = document.getElementById("work").value;
+            const orderDate = document.getElementById("orderDate").value;
+            const description = document.getElementById("description").value;
+            const dueDate = document.getElementById("dueDate").value;
+
+            const order = {
+                status,
+                work,
+                orderDate,
+                description,
+                dueDate
+            };
+
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(order)
+            });
+
+            if (response.ok) {
+                const newOrder = await response.json();
+                const tableBody = document.getElementById("orderTableBody");
+                const newRow = `<tr>
+                                    <td>${newOrder.work}</td>
+                                    <td>${newOrder.orderDate}</td>
+                                    <td>${newOrder.description}</td>
+                                    <td>${newOrder.dueDate}</td>
+                                    <td>${newOrder.status}</td>
+                                    <td>
+                                        <button onclick="editOrder('${newOrder.id}', '${newOrder.work}', '${newOrder.orderDate}', '${newOrder.description}', '${newOrder.dueDate}', '${newOrder.status}')">Alterar</button>
+                                        <button onclick="deleteOrder('${newOrder.id}', this)">Excluir</button>
+                                    </td>
+                                </tr>`;
+                tableBody.innerHTML += newRow;
+                document.getElementById("orderForm").reset();
+                closeModal();
+            } else {
+                alert('Erro ao registrar pedido');
+            }
+        }
+        
+        async function deleteOrder(id, button) {
+            const response = await fetch(`/api/orders/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                button.parentElement.parentElement.remove();
+            } else {
+                alert('Erro ao excluir pedido');
+            }
+        }
+
+        function editOrder(id, work, orderDate, description, dueDate, status) {
+            window.location.href = `editOrder.html?id=${id}&work=${work}&orderDate=${orderDate}&description=${description}&dueDate=${dueDate}&status=${status}`;
+        }
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Pedido - Gestão de Pedidos</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        .form-group button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Editar Pedido</h2>
+        <form id="orderForm">
+            <div class="form-group">
+                <label for="status">Estado:</label>
+                <select id="status" name="status">
+                    <option value="pendente">Pendente</option>
+                    <option value="aceite">Aceite</option>
+                    <option value="em_execucao">Em Execução</option>
+                    <option value="concluido">Concluído</option>
+                    <option value="nao_aprovado">Não Aprovado</option>
+                    <option value="aguarda_aprovacao">Aguarda Aprovação Cliente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="work">Trabalho:</label>
+                <input type="text" id="work" name="work" required>
+            </div>
+            <div class="form-group">
+                <label for="orderDate">Data do Pedido:</label>
+                <input type="date" id="orderDate" name="orderDate" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Descrição:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="dueDate">Data Pretendida:</label>
+                <input type="date" id="dueDate" name="dueDate" required>
+            </div>
+            <button type="button" onclick="updateOrder()">Atualizar Pedido</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            document.getElementById("status").value = urlParams.get("status");
+            document.getElementById("work").value = urlParams.get("work");
+            document.getElementById("orderDate").value = urlParams.get("orderDate");
+            document.getElementById("description").value = urlParams.get("description");
+            document.getElementById("dueDate").value = urlParams.get("dueDate");
+        });
+
+        async function updateOrder() {
+            const status = document.getElementById("status").value;
+            const work = document.getElementById("work").value;
+            const orderDate = document.getElementById("orderDate").value;
+            const description = document.getElementById("description").value;
+            const dueDate = document.getElementById("dueDate").value;
+
+            const order = {
+                status,
+                work,
+                orderDate,
+                description,
+                dueDate
+            };
+
+            const response = await fetch(`/api/orders/${urlParams.get("id")}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(order)
+            });
+
+            if (response.ok) {
+                window.location.href = "orders.html";
+            } else {
+                alert('Erro ao atualizar pedido');
+            }
+        }
+    </script>
+</body>
+</html>
