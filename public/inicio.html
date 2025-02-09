@@ -61,7 +61,7 @@
 <body>
     <div class="login-container">
         <h2>Login</h2>
-        <form action="orders.html" method="POST">
+        <form id="loginForm">
             <div class="form-group">
                 <label for="user-type">Tipo de Usuário:</label>
                 <select id="user-type" name="user-type">
@@ -77,8 +77,29 @@
                 <label for="password">Senha:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Entrar</button>
+            <button type="button" onclick="login()">Entrar</button>
         </form>
     </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const credentials = btoa(`${username}:${password}`);
+
+            fetch('/api/orders', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Basic ${credentials}`
+                }
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = 'orders.html';
+                } else {
+                    alert('Credenciais inválidas');
+                }
+            });
+        }
+    </script>
 </body>
 </html>

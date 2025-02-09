@@ -162,8 +162,14 @@
     </div>
 
     <script>
+        const credentials = btoa('seu_usuario:sua_senha');
+
         async function fetchOrders() {
-            const response = await fetch('/api/orders');
+            const response = await fetch('/api/orders', {
+                headers: {
+                    'Authorization': `Basic ${credentials}`
+                }
+            });
             const orders = await response.json();
             const tableBody = document.getElementById("orderTableBody");
             tableBody.innerHTML = '';
@@ -186,7 +192,10 @@
 
         async function deleteOrder(id, button) {
             const response = await fetch(`/api/orders/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Basic ${credentials}`
+                }
             });
 
             if (response.ok) {
