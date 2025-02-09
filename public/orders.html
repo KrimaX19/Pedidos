@@ -52,53 +52,6 @@
         .new-order-btn:hover {
             background-color: #218838;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 400px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .close-btn {
-            float: right;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-        .form-group label {
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group textarea, .form-group select {
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            width: 100%;
-        }
-        .modal-content button {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
@@ -170,24 +123,28 @@
                     'Authorization': `Basic ${credentials}`
                 }
             });
-            const orders = await response.json();
-            const tableBody = document.getElementById("orderTableBody");
-            tableBody.innerHTML = '';
+            if (response.ok) {
+                const orders = await response.json();
+                const tableBody = document.getElementById("orderTableBody");
+                tableBody.innerHTML = '';
 
-            orders.forEach(order => {
-                const newRow = `<tr>
-                                    <td>${order.work}</td>
-                                    <td>${order.orderDate}</td>
-                                    <td>${order.description}</td>
-                                    <td>${order.dueDate}</td>
-                                    <td>${order.status}</td>
-                                    <td>
-                                        <a href="editorder.html?id=${order._id}&work=${order.work}&orderDate=${order.orderDate}&description=${order.description}&dueDate=${order.dueDate}&status=${order.status}">Editar</a>
-                                        <button onclick="deleteOrder('${order._id}', this)">Excluir</button>
-                                    </td>
-                                </tr>`;
-                tableBody.innerHTML += newRow;
-            });
+                orders.forEach(order => {
+                    const newRow = `<tr>
+                                        <td>${order.work}</td>
+                                        <td>${order.orderDate}</td>
+                                        <td>${order.description}</td>
+                                        <td>${order.dueDate}</td>
+                                        <td>${order.status}</td>
+                                        <td>
+                                            <a href="editorder.html?id=${order._id}&work=${order.work}&orderDate=${order.orderDate}&description=${order.description}&dueDate=${order.dueDate}&status=${order.status}">Editar</a>
+                                            <button onclick="deleteOrder('${order._id}', this)">Excluir</button>
+                                        </td>
+                                    </tr>`;
+                    tableBody.innerHTML += newRow;
+                });
+            } else {
+                alert('Erro ao buscar pedidos');
+            }
         }
 
         async function deleteOrder(id, button) {
